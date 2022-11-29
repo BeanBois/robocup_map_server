@@ -11,31 +11,33 @@ class MapCreationServer:
 
     def __init__(self, own_location_server, room_name_server):
 
-        self.graph = Graph()
-        self.current_vertice = None
+        self.map = Graph()
         pass
 
+    def makeVertice(self,req):
+        room_name = req.room_name.pop()
+        corners = req.corners
+        vertice = Vertice(room_name, corners)
+        return vertice
 
-    def updateMap(self, req):
-        room_name = req.room_name
-        location = req.location
+    def addRoom(self, vertice):
+        self.map.addVertice(vertice)
 
-        #if robot has reached a new room 
-        if self.current_vertice is None or self.current_vertice.notName(room_name):
-            #create a new vertice with the room name
-            new_vertice = Vertice(room_name, location, self.current_vertice)    
-            self.graph.addVertice(new_vertice, self.current_vertice)
-            self.current_vertice = new_vertice
+    def connectTwoRooms(self,vertice_1,vertice_2):
+        self.map.connect_2_vertice(vertice_1,vertice_2)
 
-        #if robot still in the same room
-        elif not self.current_vertice.notName(room_name):
-            self.current_vertice.addCoord(location)
-            self.current_vertice = self.current_vertice.next[0]
-        
-        else:
-            return False
-        
-        return True
+    def map_creation_service(self,req):
+        if req.request_type == 'ADD_ROOM':
+            vertice = self.makeVertice(req)
+            self.addRoom(vertice)
+        elif req.request_type == 'COONNECT_2_ROOM':
+            #we assume that the 2 rooms are already in there
+            room_1 = self.map.getRoom[req.room_name[0]]
+            room_2 = self.map.getRoom[req.room_name[1]]
+            self.connectTwoRooms(room_1,room_2)
+
+
+
     
 
 
@@ -45,7 +47,7 @@ if __name__ == '__main__':
     try:
         while not rospy.is_shutdown():
             server = MapCreationServer()
-            service = rospy.Service('map_creation', MapCreation, server)
+            service = rospy.Service('map_creation', MapCreation, server.map_creation_service)
             rospy.loginfo("Map Creation Server is ready")
             rospy.spin()
     except rospy.ROSInterruptException:

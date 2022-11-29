@@ -1,0 +1,2 @@
+std_msgs/String roomName
+geometry_msg/msg/Point[] corners

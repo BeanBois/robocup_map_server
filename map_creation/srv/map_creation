@@ -1,4 +1,5 @@
-std_msgs/String roomname
-geometry_msg/msg/Point location
+std_msgs/String request_type
+std_msgs/String[] room_names
+geometry_msg/msg/Point[] corners
 ---
 std_msgs/Bool update_successful

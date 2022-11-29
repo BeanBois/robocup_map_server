@@ -1,39 +1,42 @@
 #!/usr/bin/env python3
 
 import rospy
-from nav_msgs improt Odometry
-from geometry_msgs import PoseWithCovariance, Pose, Point, Quaternion
+# from nav_msgs improt Odometry
+# from geometry_msgs import PoseWithCovariance, Pose, Point, Quaternion
+from map_creation.srv import MapCreationRequest
 
 class MapCreationClient:
     def __init__(self):
-        # rospy.wait_for_service('own_location_server')
-        # rospy.wait_for_service('room_name_server')
-        # self.location_client = rospy.ServiceProxy('own_location_server', own_location_server)
-        # self.location_to_rooom = rospy.ServiceProxy('room_name_server', room_name_server) 
-        self.location_subscriber = rospy.Subscriber('location', Odemetry, self.callback)
-        # rospy.wait_for_service('map_creation')
-        # self._client = rospy.ServiceProxy('map_creation', MapCreation)
+        rospy.wait_for_service('room info')
+        self.room_info_subscriber = rospy.Subscriber('room_information', self.room_info_callback)
+        self.room_connection_subscriber = rospy.Subscriber('room_connections', self.room_connection_callback)
+        # self.location_subscriber = rospy.Subscriber('location', Odemetry, self.callback)
+        rospy.wait_for_service('map_creation')
+        self._client = rospy.ServiceProxy('map_creation', MapCreation)
 
-    def callback(self,data):
-        pose_with_cov = data.data.pose
-        pos = pose_with_cov.pose
-        position = pos.position
-        orientation = pos.orientation
-        print('i am here :', position)
-        print('with orientation: ', orientation)
+    def room_info_callback(self,data):
+        request_type = 'ADD_ROOM'
+        room_name = [data.roomName]
+        corners = data.corners
+        self.call(corners,room_name,request_type)
 
-    def call(self):
-        #get current position, and with that get the room name
-        
-        # location = self.location_client(location)
-        # room_name = self.location_to_room(location)
-        #
-        # req = MapCreationRequest()
-        # req.location = location
-        # req.room_name = room_name
-        #
-        # resp = self._client(req)
-        # return resp.is_updated
+    def room_connection_callback(self,data):
+        request_type = 'CONNECT_ROOM'
+        room_name_1 = data.roomName1
+        room_name_2 = data.roomName2
+        room_name = [room_name_1, room_name_2]
+        corners = []
+        self.call(corners,room_name,request_type)
+
+    def call(self, corners, room_name, request_type):
+        # get current position, and with that get the room name
+        req = MapCreationRequest()
+        req.corners = corners
+        req.room_name = room_name
+        req.request_type = request_type
+
+        resp = self._client(req)
+        return resp.is_updated
 
 if __name__ == '__main__':
     rospy.init_node("map_creation_clinet", anonymous=True)
