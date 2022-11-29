@@ -1,15 +1,13 @@
-
-#assuming that i have a server that takes location and return the name of the room
-
+#!/usr/bin/env python3
 
 import rospy
-import Vertice, Graph
-
+from edge_and_vertices import Vertice, Graph
+from map_server.srv import map_creationRequest, map_creationResponse, map_creation
 
 
 class MapCreationServer:
 
-    def __init__(self, own_location_server, room_name_server):
+    def __init__(self):
 
         self.map = Graph()
         pass
@@ -30,11 +28,14 @@ class MapCreationServer:
         if req.request_type == 'ADD_ROOM':
             vertice = self.makeVertice(req)
             self.addRoom(vertice)
-        elif req.request_type == 'COONNECT_2_ROOM':
+        elif req.request_type == 'CONNECT_2_ROOM':
             #we assume that the 2 rooms are already in there
             room_1 = self.map.getRoom[req.room_name[0]]
             room_2 = self.map.getRoom[req.room_name[1]]
             self.connectTwoRooms(room_1,room_2)
+        elif req.request_type == 'SHOW_MAP':
+            print(self.map.adjLists)
+        print('nothing')
 
 
 
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     try:
         while not rospy.is_shutdown():
             server = MapCreationServer()
-            service = rospy.Service('map_creation', MapCreation, server.map_creation_service)
+            service = rospy.Service('map_creation', map_creation, server.map_creation_service)
             rospy.loginfo("Map Creation Server is ready")
             rospy.spin()
     except rospy.ROSInterruptException:

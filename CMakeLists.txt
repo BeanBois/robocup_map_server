@@ -34,27 +34,33 @@ find_package(catkin REQUIRED rospy std_msgs message_generation geometry_msgs)
 ##     * add a exec_depend tag for "message_runtime"
 ## * In this file (CMakeLists.txt):
 ##   * add "message_generation" and every package in MSG_DEP_SET to
-##     find_package(catkin REQUIRED COMPONENTS ...)
+    #  find_package(catkin REQUIRED COMPONENTS rospy geometry_msgs std_msgs message_generation)
 ##   * add "message_runtime" and every package in MSG_DEP_SET to
-     catkin_package(CATKIN_DEPENDS message_runtime ...)
+    #  catkin_package(CATKIN_DEPENDS message_runtime)
 ##   * uncomment the add_*_files sections below as needed
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
+add_message_files(
+  DIRECTORY
+  map_creation/msg
    FILES
    room_information.msg
+   room_connections.msg
+
 #   Message2.msg
-# )
+)
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  DIRECTORY
+  map_creation/srv
+  FILES
+  map_creation.srv
+  # Service2.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -65,8 +71,8 @@ find_package(catkin REQUIRED rospy std_msgs message_generation geometry_msgs)
 
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
-   DEPENDENCIES
-   std_msgs  # Or other packages containing msgs
+   DEPENDENCIES 
+   std_msgs 
    geometry_msgs
  )
 
@@ -102,7 +108,7 @@ find_package(catkin REQUIRED rospy std_msgs message_generation geometry_msgs)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES map_server
-#  CATKIN_DEPENDS other_catkin_pkg
+ CATKIN_DEPENDS message_runtime
 #  DEPENDS system_lib
 )
 

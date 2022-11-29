@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import numpy as np
 
 class Vertice:
@@ -60,6 +62,8 @@ class Graph:
         if not self.hasVertice(vertice):
             self.size +=1
             self.adjLists[vertice] = []
+            print(self.adjLists)
+
             return True
         else:
             return False
@@ -72,7 +76,7 @@ class Graph:
         tmp = self.adjLists[vertice_2]
         tmp.append(vertice_1)
         self.adjLists[vertice_2] = tmp
-
+        print(self.adjLists)
         return True
 
     #as of now graph does not check for consistency

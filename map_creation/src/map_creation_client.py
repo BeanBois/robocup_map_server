@@ -3,7 +3,7 @@
 import rospy
 # from nav_msgs improt Odometry
 # from geometry_msgs import PoseWithCovariance, Pose, Point, Quaternion
-from map_creation.srv import MapCreationRequest
+from map_server.srv import map_creationRequest, map_creationResponse, map_creation
 
 class MapCreationClient:
     def __init__(self):
@@ -12,9 +12,10 @@ class MapCreationClient:
         self.room_connection_subscriber = rospy.Subscriber('room_connections', self.room_connection_callback)
         # self.location_subscriber = rospy.Subscriber('location', Odemetry, self.callback)
         rospy.wait_for_service('map_creation')
-        self._client = rospy.ServiceProxy('map_creation', MapCreation)
+        self._client = rospy.ServiceProxy('map_creation', map_creation)
 
     def room_info_callback(self,data):
+        print(data)
         request_type = 'ADD_ROOM'
         room_name = [data.roomName]
         corners = data.corners
@@ -30,7 +31,7 @@ class MapCreationClient:
 
     def call(self, corners, room_name, request_type):
         # get current position, and with that get the room name
-        req = MapCreationRequest()
+        req = map_creationRequest()
         req.corners = corners
         req.room_name = room_name
         req.request_type = request_type
